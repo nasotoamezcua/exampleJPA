@@ -2,19 +2,30 @@ server:
   port: 8667
 
 #-------------------------------------------------------------------------------
-# OracleSQL EX Settings
+# MySQL Settings
 #-------------------------------------------------------------------------------
 spring:
   datasource:
-    url: jdbc:oracle:thin:@localhost:1521:xe
-    username: sirabiProject
-    password: sirabi123
-    driver-class-name: oracle.jdbc.OracleDriver
+    url: jdbc:mysql://localhost:3306/examplejpa?useSSL=false
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    
+#-------------------------------------------------------------------------------
+# OracleSQL EX Settings
+#-------------------------------------------------------------------------------
+#spring:
+#  datasource:
+#    url: jdbc:oracle:thin:@localhost:1521:xe
+#    username: sirabiProject
+#    password: sirabi123
+#    driver-class-name: oracle.jdbc.OracleDriver
 
 ##hibernate config
 
   jpa:
-    database-platform: org.hibernate.dialect.Oracle10gDialect
+#    database-platform: org.hibernate.dialect.Oracle10gDialect
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     show-sql: true
     #hibernate.ddl-auto: update
     properties:
