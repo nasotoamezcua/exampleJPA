@@ -2,14 +2,13 @@ package com.example.demo.repository.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="product")
@@ -32,8 +31,8 @@ public class Product {
      * NO SE RECOMIENDA UTILIZAR LA ETIQUETA EN LA ENTIDAD.
      * SE RECOMIENDA UTILIZARLA EN CLASES DTO
      */
-    @JsonIgnore
-    @ManyToOne
+//    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="idtype") 
     private ProductType productType;
 	

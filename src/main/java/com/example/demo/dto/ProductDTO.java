@@ -6,7 +6,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -20,7 +19,6 @@ public class ProductDTO {
 	private Date fechaConsulta;
     private String name;
     private String description;
-    @JsonIgnore
     private ProductTypeDTO productTypeDTO;
     
     

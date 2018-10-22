@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "producttype")
 public class ProductType {
@@ -32,8 +30,8 @@ public class ProductType {
      * NO SE RECOMIENDA UTILIZAR LA ETIQUETA EN LA ENTIDAD.
      * SE RECOMIENDA UTILIZARLA EN CLASES DTO
      */
-    @JsonIgnore
-	@OneToMany(mappedBy = "productType", fetch = FetchType.EAGER)
+//	@JsonIgnore
+	@OneToMany(mappedBy = "productType", fetch = FetchType.LAZY)
 	private Set<Product> products = new HashSet<Product>();
 
 	/**
@@ -115,6 +113,7 @@ public class ProductType {
 	 */
 	@Override
 	public String toString() {
-		return "ProductType [id=" + id + ", name=" + name + ", products=" + products + "]";
+		return "ProductType [id=" + id + ", name=" + name +  "]";
+//		return "ProductType [id=" + id + ", name=" + name + ", products=" + products + "]";
 	}
 }

@@ -43,4 +43,9 @@ public class ProductTypeService implements IProductTypeService{
 		productTypeDAO.deleteById(id);
 	}
 
+	@Override
+	public List<ProductType> findAllLazyFetch() {
+		return productTypeDAO.findAllLazyFetch();
+	}
+
 }

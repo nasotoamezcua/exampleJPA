@@ -37,7 +37,23 @@ public class PropductRestController {
 		log.info("----- PropductRestController :: productAll -----");
 		
 		try {
-			List<Product> listProduct = productService.findAll();
+			
+			/* EN @RestController(JSON): 
+			 * ERROR 1: LOS MAPEOS BIDIRECCIONALES UTILIZANDO LOS METODOS DEL REPOSITORIO (findAll()) DE JPA JpaRepository GENERAN CICLOS INFINITOS
+			 * SOLCION: SE SOLUCIONA COLOCANDO EL TAG @JsonIgnore EN RELACION A LA QUE HACE REFERENCIA (ProductType). 
+			 * ERROR 2: EN MAPEOS @ManyToOne FETCH=LAZY findAll() 
+			 * SE GENERA ERROR: JavassistLazyInitializer, (SE GENERAN MULTIPLES CONSULTAS, COMO UN TIPO FETCH=EAGER)
+			 * SOLCUION: SE SOLCIONA COLOCANDO @JsonIgnore EN LA ENTIDAD (Product).
+			 * CONTRA: PERO ESTO OCASIONARA NO MOSTRAR LOS OBJETOS DE SU RELACION (ProductType)
+			 * EN CASO DE QUE SE REQUIERAN MOSTRAR QUE HAGO?? 
+			 * SOLUCION FINAL: LA SOLUCION ES GENERAR UN METODO CON UNA CONSULTA EXPLICITA.
+			 * EJEMPLO: 
+			 * @Query("select p from Product p join fetch p.productType t")
+			 * List<Product> findAllLazyFetch();
+			 * Y POSTERIORMENTE ELIMINAR EL TAG @JsonIgnore SOLO EN LA ENTIDAD (Product)
+			 */
+//			List<Product> listProduct = productService.findAll(); 
+			List<Product> listProduct = productService.findAllLazyFetch();
 			if(listProduct == null || listProduct.isEmpty()) {
 				return new ResponseEntity<>(listProduct, HttpStatus.NOT_FOUND);
 			}
@@ -67,13 +83,45 @@ public class PropductRestController {
 	}
 	
 	
+	/**
+	 * AL UTILIZAR DTO LOS METODOS QUE PROPORCIONA EL REPOSITORIO DE JPA 'findAll()', NO FUNCIONA EL MAPEO EN LAS ENTIDADES TIPO FETCH=LAZY 
+	 * LAS INTERPRETA COMO TIPO FETCH=EAGER ESTO ES MALO YA QUE HIBERNATE GENERA MULTIPLES CONSUNTAS (UN MAL RENDIMIENTO EN LA APLICACION Y BD): 
+	 * ES NECESARIO CREAR UN METODO QUE COTENGA UNA CONSULTA EXPLICITA 'findAllLazyFetch()' PARA QUE HIBERNATE SOLO GENERE UNA SOLO CONSULTA
+	 * 
+	 * @return
+	 */
+	
+	/* EN @RestController(JSON) UTILIZANDO DTO LOS MAPEOS BIDIRECCIONALES UTILIZANDO LOS METODOS DEL REPOSITORIO (findAll()) DE JPA JpaRepository 
+	 * NO GENERAN CICLOS INFINITOS, ESTO QUIERE DECIR QUE NO SE UTILIZA LOS TAG @JsonIgnore EN LAS ENTIDADES RELACIONADAS (Product y ProductType)
+	 * CONTRA: PERO SI GENERAN MULTIPLES CONSULTAS, COMO SI FUERA UN TIPO FETCH=EAGER (NO RECOMENDADO)
+	 * NOTA: EL TAG @JsonIgnore NO FUNCIONA, YA QUE SOLO QUITA EL OBJETO (ProductTypeDTO) CON EL CUAL HACE REFERENCIA,
+	 * PERO NO ELIMINA LA GENERACION DE MULTIPLES CONSULTAS, ADEMAS SE REQUIERE MOSTRAR LOS OBJETOS DE SU REFERENCIA (ProductTypeDTO) POR LO TANTO EL TAG @JsonIgnore NO SIRVE.
+	 * SOLUCION FINAL: 
+	 * GENERAR UN METODO CON UNA CONSULTA EXPLICITA EJEMPLO:
+	 * @Query("select p from Product p join fetch p.productType t") (EL MISMO QUE SE GENERO PARA LA ENTIDAD Product)
+	 * List<Product> findAllLazyFetch();
+	 * Y POSTERIORMENTE ELIMINAR EL TAG @JsonIgnore SOLO EN LA ENTIDAD (ProductDTO) PARA MOSTRAR LOS OBJETOS DE SU REFENCIA (ProductTypeDTO).
+	 * 
+	 * SOLO GEGENERA UNA CONSULTA (RECOMENDADO)
+	 * select product0_.id as id1_5_0_, 
+	 * 	producttyp1_.id as id1_6_1_, 
+	 * 	product0_.description as descript2_5_0_, 
+	 * 	product0_.name as name3_5_0_, 
+	 * 	product0_.idtype as idtype4_5_0_, 
+	 * 	producttyp1_.name as name2_6_1_ 
+	 * from product product0_ inner 
+	 * 	join producttype producttyp1_ on product0_.idtype=producttyp1_.id
+	 */
 	@GetMapping(value = "/productDTO" , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<ProductDTO>> productDTOAll(){
 		
 		log.info("----- PropductRestController :: productDTOAll -----");
 		
 		try {
-			List<Product> listProduct = productService.findAll();
+			
+			
+//			List<Product> listProduct = productService.findAll();
+			List<Product> listProduct = productService.findAllLazyFetch();
 			List<ProductDTO> listProductDTO = null;
 			
 			if(listProduct == null || listProduct.isEmpty()) {
@@ -89,6 +137,31 @@ public class PropductRestController {
 		}
 	}
 	
+	/**
+	 * AL UTILIZAR DTO LOS METODOS QUE PROPORCIONA EL REPOSITORIO DE JPA 'findAll()', NO FUNCIONA EL MAPEO EN LAS ENTIDADES TIPO FETCH=LAZY 
+	 * LAS INTERPRETA COMO TIPO FETCH=EAGER ESTO ES MALO YA QUE HIBERNATE GENERA MULTIPLES CONSUNTAS (UN MAL RENDIMIENTO EN LA APLICACION Y BD): 
+	 * ES NECESARIO CREAR UN METODO QUE COTENGA UNA CONSULTA EXPLICITA 'findAllLazyFetch()' PARA QUE HIBERNATE SOLO GENERE UNA SOLO CONSULTA
+	 * 
+	 * @return
+	 */
+	
+	/*
+	 * GENERA MULTIPLES CONSULTAS (NO RECOMENDADO)
+	 * select product0_.id as id1_5_, 
+	 * 	product0_.description as descript2_5_, 
+	 * 	product0_.name as name3_5_, 
+	 * 	product0_.idtype as idtype4_5_ 
+	 * from product product0_
+	 * 
+	 * select producttyp0_.id as id1_6_0_, 
+	 * 	producttyp0_.name as name2_6_0_ 
+	 * from producttype producttyp0_ where producttyp0_.id=?
+     * 
+     * select producttyp0_.id as id1_6_0_, 
+     * 	producttyp0_.name as name2_6_0_ 
+     * from producttype producttyp0_ where producttyp0_.id=?
+
+	 */
 	@GetMapping(value = "/productTypeAllDTO" , produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public ResponseEntity<List<ProductTypeAllDTO>> productTypeAllDTOAll(){
 		
@@ -96,6 +169,7 @@ public class PropductRestController {
 		
 		try {
 			List<Product> listProduct = productService.findAll();
+//			List<Product> listProduct = productService.findAllLazyFetch();
 			List<ProductTypeAllDTO> listProductTypeAllDTO = null;
 			
 			if(listProduct == null || listProduct.isEmpty()) {
