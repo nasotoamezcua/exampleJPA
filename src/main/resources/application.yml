@@ -1,5 +1,5 @@
 server:
-  port: 8667
+  port: 8667 
 
 #-------------------------------------------------------------------------------
 # MySQL Settings
@@ -31,4 +31,12 @@ spring:
     properties:
       hibernate:
         temp.use_jdbc_metadata_defaults: false
-##
+        
+## utilizar feign con hystrix
+feign:
+  hystrix:
+    enabled: true
+    
+domicilios-api:
+  ribbon:
+    listOfServers: http://localhost:8007
