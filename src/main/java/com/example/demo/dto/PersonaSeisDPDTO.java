@@ -1,22 +1,16 @@
-package com.example.demo.dto.cloud;
+package com.example.demo.dto;
 
-public class PersonaDTO {
+public class PersonaSeisDPDTO {
 	
-	private Long id;
 	private String nombre;
 	private String primerApellido;
 	private String segundoApellido;
-	private String curp;
 	private String sexo;
-	private Boolean finado;
+//	@Temporal(TemporalType.TIMESTAMP)
+//	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "America/Mexico_City")
+	private String fechaNacimiento;
+	private Integer entidad;
 	
-	
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
 	public String getNombre() {
 		return nombre;
 	}
@@ -35,22 +29,23 @@ public class PersonaDTO {
 	public void setSegundoApellido(String segundoApellido) {
 		this.segundoApellido = segundoApellido;
 	}
-	public String getCurp() {
-		return curp;
-	}
-	public void setCurp(String curp) {
-		this.curp = curp;
-	}
 	public String getSexo() {
 		return sexo;
 	}
 	public void setSexo(String sexo) {
 		this.sexo = sexo;
 	}
-	public Boolean getFinado() {
-		return finado;
+	public String getFechaNacimiento() {
+		return fechaNacimiento;
 	}
-	public void setFinado(Boolean finado) {
-		this.finado = finado;
+	public void setFechaNacimiento(String fechaNacimiento) {
+		this.fechaNacimiento = fechaNacimiento;
 	}
+	public Integer getEntidad() {
+		return entidad;
+	}
+	public void setEntidad(Integer entidad) {
+		this.entidad = entidad;
+	}
+
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PersonaDomicilioDTO {
 	
+	
 	private Long id;
 	private String fecha;
 	private String cadena;
@@ -15,6 +16,8 @@ public class PersonaDomicilioDTO {
 	private ParticipanteDTO participanyteDto;
 	@JsonProperty("ubicacion")
 	private UbicacionDTO ubicacionDto;
+	@JsonProperty("mensaje")
+	private String mensaje;
 	
 	public Long getId() {
 		return id;
@@ -57,5 +60,11 @@ public class PersonaDomicilioDTO {
 	}
 	public void setUbicacionDto(UbicacionDTO ubicacionDto) {
 		this.ubicacionDto = ubicacionDto;
+	}
+	public String getMensaje() {
+		return mensaje;
+	}
+	public void setMensaje(String mensaje) {
+		this.mensaje = mensaje;
 	}
 }
